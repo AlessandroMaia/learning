@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Alessandro",
+      "email": "Alessandro@funcef.com.br",
+      "blocked": false
+    },
+    {
+      "id": "2",
+      "name": "Roberto",
+      "email": "Roberto@funcef.com.br",
+      "blocked": false
+    },
+    {
+      "id": "3",
+      "name": "Roberta",
+      "email": "Roberta@funcef.com.br",
+      "blocked": true
+    },
+    {
+      "id": "3882",
+      "name": "Alessandro #2",
+      "email": "alessandro2@funcef.com.br",
+      "blocked": true
+    },
+    {
+      "id": "ef25",
+      "name": "dv",
+      "email": "vdv",
+      "blocked": false
+    },
+    {
+      "id": "0825",
+      "name": "alessandro",
+      "email": "alessandromaia@funcef.com.br",
+      "blocked": false
+    }
+  ]
+}
