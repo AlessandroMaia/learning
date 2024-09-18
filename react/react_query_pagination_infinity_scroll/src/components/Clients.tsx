@@ -1,12 +1,3 @@
-import {
-  Pagination,
-  PaginationButton,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/Pagination';
 import { Skeleton } from '@/components/ui/Skeleton';
 import {
   Table,
@@ -18,17 +9,48 @@ import {
   TableRow,
 } from '@/components/ui/Table';
 import { useClients } from '@/hooks/useClients';
-import { generateEllipsisPagination } from '@/lib/utils';
-import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { useEffect, useRef } from 'react';
 
 export function Clients() {
-  const { clients, isLoading, pagination } = useClients(1);
-  const pages = useMemo(() => {
-    return generateEllipsisPagination(
-      pagination.currentPage,
-      pagination.totalPages
+  const { clients, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useClients(10);
+
+  const tableCaptionRef = useRef<null | HTMLTableCaptionElement>(null);
+
+  useEffect(() => {
+    if (!tableCaptionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        const { isIntersecting } = entries[0];
+
+        if (!hasNextPage) {
+          obs.disconnect();
+          return;
+        } else if (isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        // root: {},
+        rootMargin: '75px',
+      }
     );
-  }, [pagination.currentPage, pagination.totalPages]);
+
+    observer.observe(tableCaptionRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isLoading]);
+
+  // const pages = useMemo(() => {
+  //   return generateEllipsisPagination(
+  //     pagination.currentPage,
+  //     pagination.totalPages
+  //   );
+  // }, [pagination.currentPage, pagination.totalPages]);
 
   return (
     <div>
@@ -90,7 +112,16 @@ export function Clients() {
             ))}
           </TableBody>
 
-          <TableCaption>
+          <TableCaption
+            ref={tableCaptionRef}
+            className={cn(!isFetchingNextPage && 'm-0 w-0 h-0')}
+          >
+            {isFetchingNextPage && (
+              <span className="text-muted-foreground">Carregando...</span>
+            )}
+          </TableCaption>
+
+          {/* <TableCaption>
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
@@ -125,7 +156,7 @@ export function Clients() {
                   );
                 })}
 
-                {/*
+
                 {Array.from({ length: pagination.totalPages }, (_, index) => (
                   <PaginationItem key={index}>
                     <PaginationButton
@@ -135,7 +166,7 @@ export function Clients() {
                       {index + 1}
                     </PaginationButton>
                   </PaginationItem>
-                ))} */}
+                ))}
 
                 <PaginationItem>
                   <PaginationNext
@@ -145,7 +176,7 @@ export function Clients() {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </TableCaption>
+          </TableCaption> */}
         </Table>
       )}
     </div>
