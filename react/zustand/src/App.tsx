@@ -1,8 +1,13 @@
+import { Counter } from "./components/Counter";
+import { UserProfile } from "./components/UserProfile";
+
 function App() {
+
   return (
-    <h1 className="text-3xl font-bold">
-      Zustand
-    </h1>
+    <div  className="min-h-screen flex flex-col items-center justify-center gap-10">
+      <Counter />
+      <UserProfile />
+    </div>
   );
 }
 
