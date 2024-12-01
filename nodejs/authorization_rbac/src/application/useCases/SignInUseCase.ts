@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { prismaClient } from '../libs/prismaClient';
+import { prismaClient } from '../libs/PrismaClient';
 import { InvalidCredentials } from '../errors/InvalidCredentials';
 import jsonwebtoken from 'jsonwebtoken';
 import { env } from '../config/env';
@@ -11,30 +11,28 @@ interface IInput {
 
 interface IOutput {
   accessToken: string;
-};
+}
 
 export class SignInUseCase {
   async execute({ email, password }: IInput): Promise<IOutput> {
     const account = await prismaClient.account.findUnique({
-      where: { email }
+      where: { email },
     });
 
-    if (!account)
-      throw new InvalidCredentials();
+    if (!account) throw new InvalidCredentials();
 
     const isPasswordValid = await bcrypt.compare(password, account.password);
 
-    if (!isPasswordValid)
-      throw new InvalidCredentials();
+    if (!isPasswordValid) throw new InvalidCredentials();
 
     const accessToken = jsonwebtoken.sign(
-      { sub: account.id },
+      { sub: account.id, role: account.role },
       env.jswSecret,
       { expiresIn: '1d' }
     );
 
     return {
-      accessToken
+      accessToken,
     };
   }
 }

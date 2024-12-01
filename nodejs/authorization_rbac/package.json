@@ -1,11 +1,11 @@
 {
-  "name": "006_backend_Authentication",
+  "name": "authorization_rbac",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@prisma/client": "^5.19.1",
+    "@prisma/client": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",

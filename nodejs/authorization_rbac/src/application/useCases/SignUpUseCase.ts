@@ -27,7 +27,8 @@ export class SignUpUseCase {
       data: {
         name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: 'USER'
       }
     });
   }
