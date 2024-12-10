@@ -1,6 +1,6 @@
-import { hash } from "bcryptjs";
-import { AccountsAlreadyExists } from "../errors/accountsAlreadyExists";
-import { prismaClient } from "../lib/prismaClient";
+import bcrypt from 'bcryptjs';
+import { prismaClient } from '../libs/PrismaClient';
+import { AccountsAlreadyExists } from '../errors/AccountsAlreadyExists';
 
 interface IInput {
   name: string;
@@ -11,6 +11,8 @@ interface IInput {
 type IOutput = void;
 
 export class SignUpUseCase {
+  constructor(private readonly salt: number) {}
+
   async execute({ name, email, password }: IInput): Promise<IOutput> {
     const emailAlreadyExists = await prismaClient.account.findUnique({
       where: { email }
@@ -19,13 +21,13 @@ export class SignUpUseCase {
     if(emailAlreadyExists)
       throw new AccountsAlreadyExists();
 
-    const hashedPassoword = await hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, this.salt);
 
     await prismaClient.account.create({
       data: {
         name,
         email,
-        password: hashedPassoword
+        password: hashedPassword
       }
     });
   }
