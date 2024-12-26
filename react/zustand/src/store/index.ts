@@ -13,6 +13,10 @@ export const useStore = create<Store>()(
     })),
     {
       enabled: import.meta.env.DEV,
+      anonymousActionType: "teste",
+      store: "teste2"
     }
   )
 );
+
+

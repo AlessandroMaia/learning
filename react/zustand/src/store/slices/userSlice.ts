@@ -16,9 +16,9 @@ export type UserSlice = UserStore & UserActions;
 
 export const createUserSlice: StoreSlice<UserSlice> = (set) => ({
   data: {
-    name: "alessandro",
-    email: "alessandro@gmail.com",
-    username: "alessandromaia",
+    name: "a",
+    email: "a@gmail.com",
+    username: "a",
   },
   setUsername: (username: string) =>
     set((prev) => {

@@ -2,6 +2,9 @@
   "name": "building_uikit_with_tailwind_and_storybook",
   "private": true,
   "version": "1.0.0",
+  "files" : [
+    "dist"
+  ],
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build:storybook": "storybook build",
