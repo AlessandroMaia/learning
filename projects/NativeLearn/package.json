@@ -9,15 +9,22 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
     "expo": "~52.0.27",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
-    "react-native": "0.76.6"
+    "react-hook-form": "^7.54.2",
+    "react-native": "0.76.6",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@eslint/js": "^9.18.0",
     "@types/react": "~18.3.12",
-    "typescript": "^5.3.3"
+    "eslint": "^9.18.0",
+    "eslint-plugin-react": "^7.37.4",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.21.0"
   },
   "private": true
 }

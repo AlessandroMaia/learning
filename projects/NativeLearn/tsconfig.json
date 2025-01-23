@@ -3,6 +3,14 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": "./",
+    "paths": {
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@services/*": ["./src/services/*"],
+      "@configs/*": ["./src/configs/*"],
+    }
   },
   "include": ["src/@types/**/*.d.ts", "src/**/*"]
 }
