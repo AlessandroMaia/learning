@@ -28,6 +28,16 @@ export default [
               importNames: ['Button'],
               message: 'import \'Button\' de \'@components\''
             },
+            {
+              name: 'react-native',
+              importNames: ['View'],
+              message: 'import \'View\' de \'@components\''
+            },
+            {
+              name: 'react-native',
+              importNames: ['Text'],
+              message: 'import \'Text\' de \'@components\''
+            }
           ],
         },
       ],

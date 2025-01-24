@@ -10,8 +10,14 @@ import {
   TextInputProps
 } from 'react-native';
 
-const TextInput = React.forwardRef<RNTextInput, TextInputProps>(
-  ({ style, editable, onFocus, onBlur, ...rest }, ref) => {
+interface ITextInputProps
+  extends TextInputProps {
+    disabled?: boolean;
+    error?: boolean;
+}
+
+const TextInput = React.forwardRef<RNTextInput, ITextInputProps>(
+  ({ style, disabled = false, error = false, onFocus, onBlur, ...rest }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     function handleFocus(e: NativeSyntheticEvent<TextInputFocusEventData>){
@@ -29,21 +35,22 @@ const TextInput = React.forwardRef<RNTextInput, TextInputProps>(
     }
 
     const styleDynamic = {
-      borderColor: useThemeColor({ color: 'input' }),
+      borderColor: useThemeColor({ color: error ? 'destructive' : 'input' }),
       backgroundColor: useThemeColor({ color: 'background' }),
+      color: useThemeColor({ color: 'foreground' }),
     };
 
     const placeholderTextColor = useThemeColor({ color: 'muted-foreground' });
-    const focusedBorderColor = useThemeColor({ color: 'foreground' });
+    const focusedBorderColor = useThemeColor({ color: error ? 'destructive' : 'foreground', opacity: 0.4 });
 
     return (
       <RNTextInput
         ref={ref}
-        editable={editable}
+        editable={!disabled}
         style={[
           { ...styles.input, ...styleDynamic },
           style,
-          !editable && { opacity: 0.5 },
+          disabled && { opacity: 0.5 },
           isFocused && { borderColor: focusedBorderColor, borderWidth: 2 }
         ]}
         onFocus={handleFocus}
@@ -65,34 +72,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    ...theme.text.base,
-    elevation: 2
+    ...theme.text.base
   }
 });
 
 export { TextInput };
 
-
-
-// import * as React from "react"
-
-// import { cn } from "@/lib/utils"
-
-// const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-//   ({ className, type, ...props }, ref) => {
-//     return (
-//       <input
-//         type={type}
-//         className={cn(
-//           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-//           className
-//         )}
-//         ref={ref}
-//         {...props}
-//       />
-//     )
-//   }
-// )
-// Input.displayName = "Input"
-
-// export { Input }
