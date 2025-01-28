@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { Button } from '@components/Button';
 import { FormControl, FormErrorMessage, FormField, FormLabel } from '@components/FormField';
 import { TextInput } from '@components/TextInput';
 import { View } from '@components/View';
+import { useAuth } from '@contexts/AuthContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useThemeColor } from '@hooks/useThemeColor';
 import React from 'react';
@@ -22,7 +24,8 @@ const schema = z.object({
 type TSignin = z.infer<typeof schema>;
 
 export default function SignIn() {
-  const { control } = useForm<TSignin>({
+  const backgroundColor = useThemeColor({ color: 'background' });
+  const { control, setFocus, handleSubmit } = useForm<TSignin>({
     resolver: zodResolver(schema),
     mode: 'onBlur',
     defaultValues: {
@@ -30,8 +33,11 @@ export default function SignIn() {
       password: '',
     },
   });
+  const { onLogin } = useAuth();
 
-  const backgroundColor = useThemeColor({ color: 'background' });
+  async function onSubmit(data: TSignin) {
+    await onLogin!(data.username, data.password);
+  }
 
   return (
     <KeyboardAvoidingView
@@ -48,18 +54,41 @@ export default function SignIn() {
           <FormControl
             control={control}
             name="username"
-            render={({ field, fieldState: { invalid } }) => (
+            render={({ field: {onBlur, onChange, value}, fieldState: { invalid } }) => (
               <TextInput
                 placeholder="place your username"
                 keyboardType="ascii-capable"
                 returnKeyType="next"
+                onSubmitEditing={() => setFocus('password')}
                 error={invalid}
-                {...field}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
               />
             )}
           />
           <FormErrorMessage />
         </FormField>
+        <FormField>
+          <FormLabel>Password</FormLabel>
+          <FormControl
+            control={control}
+            name="password"
+            render={({ field: {onBlur, onChange, value}, fieldState: { invalid } }) => (
+              <TextInput
+                placeholder="place your password"
+                keyboardType="ascii-capable"
+                returnKeyType="done"
+                error={invalid}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+          <FormErrorMessage />
+        </FormField>
+        <Button text='SignIn' onPress={handleSubmit(onSubmit)}/>
       </View>
     </KeyboardAvoidingView>
   );
@@ -74,7 +103,7 @@ const styles = StyleSheet.create({
   icon: { width: 150, height: 150 },
   form: {
     marginTop: 20,
-    gap: 20,
-    width: 300,
+    gap: 15,
+    width: 330,
   },
 });
