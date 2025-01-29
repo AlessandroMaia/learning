@@ -1,106 +1,187 @@
 import { theme } from '@constants/theme';
+import { useThemeColor } from '@hooks/useThemeColor';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useLinkBuilder } from '@react-navigation/native';
-import { Pressable, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { Dimensions, Pressable, StyleSheet, TextStyle } from 'react-native';
+import Animated, {
+  runOnUI,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { Text } from './Text';
 import { View } from './View';
 
+const { width } = Dimensions.get('window');
+const GAP = 20;
+const ICON_SIZE = 24;
+const EFFECT_SIZE = 36;
+
 export function BottomTabBar({
   descriptors,
-  insets,
   navigation,
   state,
 }: BottomTabBarProps) {
-  const { buildHref } = useLinkBuilder();
+  const TabCount = state.routes.length;
+  const focusedTab = state.index;
 
-  if (state.routes.length > 4) throw new Error('Maximum of 4 tabs allowed');
+  const translateX = useSharedValue(0);
+  const TabWidth = (width - GAP * (TabCount - 1)) / TabCount;
+  const backgroundColor = useThemeColor({ color: 'background' });
+  const borderColor = useThemeColor({ color: 'border' });
+
+  useEffect(() => {
+    runOnUI((index: number) => {
+      translateX.value = withSpring(
+        index * (TabWidth + GAP) + TabWidth / 2 - EFFECT_SIZE / 2
+      );
+    })(focusedTab);
+  }, [focusedTab]);
 
   return (
-    <View style={styles.wrapper}>
-      <View
-        style={{
-          padding: 10,
-          borderRadius: 20,
-          position: 'absolute',
-          zIndex: 1,
-          top: 0,
-          left: 85
-        }}
+    <View
+      style={[
+        styles.wrapper,
+        {
+          backgroundColor,
+          borderColor: borderColor,
+        },
+      ]}
+    >
+      <Animated.View
+        style={[
+          styles.animationWrapper,
+          {
+            transform: [{ translateX }],
+          },
+        ]}
       >
         <View
-          style={{
-            backgroundColor: 'red',
-            width: 14,
-            height: 14,
-            borderRadius: 7,
-          }}
-        ></View>
-      </View>
-      <View style={styles.container}>
-        {state.routes.map(({ key, name, params }, index) => {
-          const { options } = descriptors[key];
+          style={[
+            styles.animationContainer,
+            {
+              borderColor: borderColor,
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.animationIcon,
+              {
+                backgroundColor: borderColor,
+              },
+            ]}
+          />
+        </View>
+      </Animated.View>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const label =
+          options.tabBarLabel !== undefined &&
+          typeof options.tabBarLabel === 'string'
+            ? options.tabBarLabel
+            : options.title !== undefined
+            ? options.title
+            : route.name;
 
-          const label: string =
-            options.title !== undefined ? options.title : name;
+        const isFocused = state.index === index;
 
-          const isFocused = state.index === index;
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: key,
-              canPreventDefault: true,
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate({
+              name: route.name,
+              merge: true,
+              params: {},
             });
+          }
+        };
 
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(name, params);
-            }
-          };
+        const onLongPress = () => {
+          navigation.emit({
+            type: 'tabLongPress',
+            target: route.key,
+          });
+        };
 
-          return (
-            <View
-              key={key}
+        return (
+          <Pressable
+            key={route.key}
+            style={[
+              styles.button,
+              {
+                width: TabWidth,
+              },
+            ]}
+            accessibilityRole="button"
+            accessibilityState={isFocused ? { selected: true } : {}}
+            accessibilityLabel={options.tabBarAccessibilityLabel}
+            onPress={onPress}
+            onLongPress={onLongPress}
+          >
+            {options.tabBarIcon &&
+              options.tabBarIcon({
+                focused: true,
+                color: borderColor,
+                size: ICON_SIZE,
+              })}
+            <Text
               style={{
-                height: 68,
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                backgroundColor: `rgb(${theme.colors.zinc[100]})`,
+                fontWeight: theme.font.medium as TextStyle['fontWeight'],
               }}
             >
-              <Pressable style={styles.buttom} onPress={onPress}>
-                {options.tabBarIcon!({
-                  color: 'black',
-                  focused: false,
-                  size: 20,
-                })}
-                <Text>{label}</Text>
-              </Pressable>
-            </View>
-          );
-        })}
-      </View>
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    height: 92,
-    justifyContent: 'flex-end'
-  },
-  container: {
-    backgroundColor: `rgb(${theme.colors.zinc[100]})`,
     flexDirection: 'row',
-    paddingHorizontal: 8,
-    gap: 8,
-    height: 75,
-    alignItems: 'flex-end',
-    justifyContent: 'space-around',
-    elevation: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 3,
+    paddingTop: 7,
+    borderTopWidth: 1,
+    maxHeight: 50,
+    zIndex: 2,
   },
-  buttom: {
+  animationWrapper: {
+    width: EFFECT_SIZE,
+    height: EFFECT_SIZE / 2,
+    position: 'absolute',
+    overflow: 'hidden',
+    top: -EFFECT_SIZE / 2,
+    zIndex: -3,
+    borderTopStartRadius: EFFECT_SIZE,
+    borderTopEndRadius: EFFECT_SIZE,
+  },
+  animationContainer: {
+    width: EFFECT_SIZE,
+    height: EFFECT_SIZE,
+    borderRadius: EFFECT_SIZE,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  animationIcon: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  button: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 68,
+    gap: 1,
+    zIndex: 3,
   },
 });

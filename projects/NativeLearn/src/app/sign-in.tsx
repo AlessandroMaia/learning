@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { Button } from '@components/Button';
-import { FormControl, FormErrorMessage, FormField, FormLabel } from '@components/FormField';
+import {
+  FormControl,
+  FormErrorMessage,
+  FormField,
+  FormLabel,
+} from '@components/FormField';
 import { TextInput } from '@components/TextInput';
 import { View } from '@components/View';
 import { useAuth } from '@contexts/AuthContext';
@@ -8,12 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useThemeColor } from '@hooks/useThemeColor';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from 'react-native';
+import { Image, KeyboardAvoidingView, StyleSheet } from 'react-native';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -40,10 +40,7 @@ export default function SignIn() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <KeyboardAvoidingView style={[styles.container, { backgroundColor }]}>
       <Image
         source={require('../assets/images/icon.png')}
         style={styles.icon}
@@ -54,7 +51,10 @@ export default function SignIn() {
           <FormControl
             control={control}
             name="username"
-            render={({ field: {onBlur, onChange, value}, fieldState: { invalid } }) => (
+            render={({
+              field: { onBlur, onChange, value },
+              fieldState: { invalid },
+            }) => (
               <TextInput
                 placeholder="place your username"
                 keyboardType="ascii-capable"
@@ -74,7 +74,10 @@ export default function SignIn() {
           <FormControl
             control={control}
             name="password"
-            render={({ field: {onBlur, onChange, value}, fieldState: { invalid } }) => (
+            render={({
+              field: { onBlur, onChange, value },
+              fieldState: { invalid },
+            }) => (
               <TextInput
                 placeholder="place your password"
                 keyboardType="ascii-capable"
@@ -88,7 +91,7 @@ export default function SignIn() {
           />
           <FormErrorMessage />
         </FormField>
-        <Button text='SignIn' onPress={handleSubmit(onSubmit)}/>
+        <Button text="SignIn" onPress={handleSubmit(onSubmit)} />
       </View>
     </KeyboardAvoidingView>
   );
