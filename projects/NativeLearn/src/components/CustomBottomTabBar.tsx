@@ -25,11 +25,11 @@ const ICON_SIZE = 24;
 const EFFECT_SIZE = 36;
 const PADDING_HORIZONTAL = 10;
 
-export function BottomTabBar({
+export function CustomBottomTabBar({
   descriptors,
   navigation,
   state,
-}: BottomTabBarProps) {
+}: BottomTabBarProps): React.ReactNode {
   const TabCount = state.routes.length + 1;
   const focusedTab = state.index;
 
@@ -47,10 +47,11 @@ export function BottomTabBar({
         index * (TabWidth + GAP) +
           TabWidth / 2 -
           EFFECT_SIZE / 2 +
-          PADDING_HORIZONTAL
-      , {
-        damping: 12
-      });
+          PADDING_HORIZONTAL,
+        {
+          damping: 12,
+        }
+      );
     })(focusedTab);
   }, [focusedTab]);
 
@@ -179,7 +180,7 @@ export function BottomTabBar({
         ]}
         onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
         label={'Menu'}
-        icon={<FontAwesome5  size={ICON_SIZE} name="th" color={borderColor} />}
+        icon={<FontAwesome5 size={ICON_SIZE} name="th" color={borderColor} />}
       />
     </View>
   );

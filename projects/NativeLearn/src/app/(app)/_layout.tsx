@@ -1,3 +1,4 @@
+import { CustomDrawerContent } from '@components/CustomDrawerContent';
 import { useAuth } from '@contexts/AuthContext';
 import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
@@ -11,7 +12,7 @@ export default function AppLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer screenOptions={{ headerShown: false }}>
+      <Drawer drawerContent={CustomDrawerContent} screenOptions={{ headerShown: false }}>
         <Drawer.Screen
           name="(tabs)"
           options={{

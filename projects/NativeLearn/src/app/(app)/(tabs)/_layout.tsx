@@ -1,11 +1,11 @@
-import { BottomTabBar } from '@components/BottomTabBar';
+import { CustomBottomTabBar } from '@components/CustomBottomTabBar';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
 export default function TabLayout() {
   return (
-    <Tabs tabBar={(props) => <BottomTabBar {...props}/>} screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false }} >
+    <Tabs tabBar={(props) => <CustomBottomTabBar {...props}/>} screenOptions={{ tabBarActiveTintColor: 'blue', headerShown: false }} >
       <Tabs.Screen
         name="index"
         options={{
