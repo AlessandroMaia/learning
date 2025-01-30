@@ -1,9 +1,16 @@
 import { theme } from '@constants/theme';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { useThemeColor } from '@hooks/useThemeColor';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { DrawerActions } from '@react-navigation/native';
-import React, { useEffect } from 'react';
-import { Dimensions, Pressable, StyleSheet, TextStyle, TouchableOpacity } from 'react-native';
+import React, { ReactNode, useEffect } from 'react';
+import {
+  Dimensions,
+  StyleSheet,
+  TextStyle,
+  TouchableOpacity,
+} from 'react-native';
+import { TouchableOpacityProps } from 'react-native-gesture-handler';
 import Animated, {
   runOnUI,
   useSharedValue,
@@ -27,17 +34,52 @@ export function BottomTabBar({
   const focusedTab = state.index;
 
   const translateX = useSharedValue(0);
-  const TabWidth = (width - GAP - (PADDING_HORIZONTAL * 2) * (TabCount - 1)) / TabCount;
+  const TabWidth =
+    (width - GAP - PADDING_HORIZONTAL * 2 * (TabCount - 1)) / TabCount;
   const backgroundColor = useThemeColor({ color: 'background' });
+  const foregroundColor = useThemeColor({ color: 'foreground' });
   const borderColor = useThemeColor({ color: 'border' });
+  const primaryColor = useThemeColor({ color: 'primary' });
 
   useEffect(() => {
     runOnUI((index: number) => {
       translateX.value = withSpring(
-        index * (TabWidth + GAP) + TabWidth / 2 - EFFECT_SIZE / 2 + PADDING_HORIZONTAL
-      );
+        index * (TabWidth + GAP) +
+          TabWidth / 2 -
+          EFFECT_SIZE / 2 +
+          PADDING_HORIZONTAL
+      , {
+        damping: 12
+      });
     })(focusedTab);
   }, [focusedTab]);
+
+  const CustomButton = ({
+    label,
+    icon,
+    ...props
+  }: TouchableOpacityProps & { label: string; icon?: ReactNode }) => {
+    return (
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            width: TabWidth,
+          },
+        ]}
+        {...props}
+      >
+        {icon}
+        <Text
+          style={{
+            fontWeight: theme.font.medium as TextStyle['fontWeight'],
+          }}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View
@@ -45,7 +87,7 @@ export function BottomTabBar({
         styles.wrapper,
         {
           backgroundColor,
-          borderColor: borderColor,
+          borderColor,
         },
       ]}
     >
@@ -61,7 +103,7 @@ export function BottomTabBar({
           style={[
             styles.animationContainer,
             {
-              borderColor: borderColor,
+              borderColor,
             },
           ]}
         >
@@ -69,7 +111,7 @@ export function BottomTabBar({
             style={[
               styles.animationIcon,
               {
-                backgroundColor: borderColor,
+                backgroundColor: foregroundColor,
               },
             ]}
           />
@@ -111,55 +153,34 @@ export function BottomTabBar({
         };
 
         return (
-          <TouchableOpacity
+          <CustomButton
             key={route.key}
-            style={[
-              styles.button,
-              {
-                width: TabWidth,
-              },
-            ]}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
             onPress={onPress}
             onLongPress={onLongPress}
-          >
-            {options.tabBarIcon &&
+            label={label}
+            icon={
+              options.tabBarIcon &&
               options.tabBarIcon({
                 focused: true,
-                color: borderColor,
+                color: isFocused ? primaryColor : borderColor,
                 size: ICON_SIZE,
-              })}
-            <Text
-              style={{
-                fontWeight: theme.font.medium as TextStyle['fontWeight'],
-              }}
-            >
-              {label}
-            </Text>
-          </TouchableOpacity>
+              })
+            }
+          />
         );
       })}
 
-      <Pressable
+      <CustomButton
         style={[
           styles.button,
           {
             width: TabWidth,
           },
         ]}
-        accessibilityRole="button"
         onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-      >
-        <Text
-          style={{
-            fontWeight: theme.font.medium as TextStyle['fontWeight'],
-          }}
-        >
-          Menu
-        </Text>
-      </Pressable>
+        label={'Menu'}
+        icon={<FontAwesome5  size={ICON_SIZE} name="th" color={borderColor} />}
+      />
     </View>
   );
 }
@@ -174,7 +195,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     maxHeight: 54,
     zIndex: 2,
-    paddingHorizontal:  PADDING_HORIZONTAL
+    paddingHorizontal: PADDING_HORIZONTAL,
   },
   animationWrapper: {
     width: EFFECT_SIZE,
