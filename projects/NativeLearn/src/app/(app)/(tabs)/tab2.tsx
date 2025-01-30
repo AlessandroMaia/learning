@@ -3,12 +3,12 @@ import { View } from '@components/View';
 import { useAuth } from '@contexts/AuthContext';
 
 
-export default function Settings() {
+export default function Tab2() {
   const { onLogout } = useAuth();
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>
-        Settings
+        Tab2
       </Text>
       <Text
         onPress={async () => {

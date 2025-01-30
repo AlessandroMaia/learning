@@ -10,12 +10,12 @@ export default function AppLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-       <Drawer screenOptions={{ drawerHideStatusBarOnOpen: true}}>
+      <Drawer screenOptions={{ headerShown: false }}>
         <Drawer.Screen
           name="(tabs)"
           options={{
             drawerLabel: 'Home',
-            title: ''
+            title: '',
           }}
         />
         <Drawer.Screen
@@ -23,7 +23,9 @@ export default function AppLayout() {
           options={{
             drawerLabel: 'User',
             title: 'User',
+            headerShown: true
           }}
+
         />
       </Drawer>
     </GestureHandlerRootView>

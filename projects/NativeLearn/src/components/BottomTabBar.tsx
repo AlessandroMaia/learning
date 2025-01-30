@@ -1,8 +1,9 @@
 import { theme } from '@constants/theme';
 import { useThemeColor } from '@hooks/useThemeColor';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { DrawerActions } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { Dimensions, Pressable, StyleSheet, TextStyle } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, TextStyle, TouchableOpacity } from 'react-native';
 import Animated, {
   runOnUI,
   useSharedValue,
@@ -15,24 +16,25 @@ const { width } = Dimensions.get('window');
 const GAP = 20;
 const ICON_SIZE = 24;
 const EFFECT_SIZE = 36;
+const PADDING_HORIZONTAL = 10;
 
 export function BottomTabBar({
   descriptors,
   navigation,
   state,
 }: BottomTabBarProps) {
-  const TabCount = state.routes.length;
+  const TabCount = state.routes.length + 1;
   const focusedTab = state.index;
 
   const translateX = useSharedValue(0);
-  const TabWidth = (width - GAP * (TabCount - 1)) / TabCount;
+  const TabWidth = (width - GAP - (PADDING_HORIZONTAL * 2) * (TabCount - 1)) / TabCount;
   const backgroundColor = useThemeColor({ color: 'background' });
   const borderColor = useThemeColor({ color: 'border' });
 
   useEffect(() => {
     runOnUI((index: number) => {
       translateX.value = withSpring(
-        index * (TabWidth + GAP) + TabWidth / 2 - EFFECT_SIZE / 2
+        index * (TabWidth + GAP) + TabWidth / 2 - EFFECT_SIZE / 2 + PADDING_HORIZONTAL
       );
     })(focusedTab);
   }, [focusedTab]);
@@ -109,7 +111,7 @@ export function BottomTabBar({
         };
 
         return (
-          <Pressable
+          <TouchableOpacity
             key={route.key}
             style={[
               styles.button,
@@ -136,9 +138,28 @@ export function BottomTabBar({
             >
               {label}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         );
       })}
+
+      <Pressable
+        style={[
+          styles.button,
+          {
+            width: TabWidth,
+          },
+        ]}
+        accessibilityRole="button"
+        onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+      >
+        <Text
+          style={{
+            fontWeight: theme.font.medium as TextStyle['fontWeight'],
+          }}
+        >
+          Menu
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -151,8 +172,9 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
     paddingTop: 7,
     borderTopWidth: 1,
-    maxHeight: 50,
+    maxHeight: 54,
     zIndex: 2,
+    paddingHorizontal:  PADDING_HORIZONTAL
   },
   animationWrapper: {
     width: EFFECT_SIZE,
